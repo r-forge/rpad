@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+
+
+<head>
+  <title>Dojo Test Page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="dojo.js"></script>
+</head>
+
+
+<body>
+
+<h1>Dojo Test Page</h1>
+<p>Each item should appear below as described.</p>
+
+<!-- require a demo module -->
+<script>
+// Require the module we just created
+require(["myModule"], function(myModule){
+        // Use our module to change the text in the greeting
+        myModule.setText("greeting", "Hello Dojo!");
+ 
+        // After a few seconds, restore the text to its original state
+        setTimeout(function(){
+                myModule.restoreText("greeting");
+        }, 3000);
+});
+</script>
+
+<h4 id="greeting">Hello</h4>
+<p>The heading immediately above should say "Hello Dojo!" then change to "Hello" a few seconds later. This confirms that Dojo is loaded and can locate modules programmatically (in JavaScript).</p>
+
+<h4>A simple Dojo widget</h4>
+<p>There should be a button below with a counter that increments when clicked. This confirms that Dojo widgets can be instantiated declaratively (in markup).</p>
+<!-- instantiate a test widget -->
+<script src="Counter.js"></script>
+<span id="AWidget" data-dojo-type="Counter"></span>
+
+<h4>Widget Identification</h4>
+<p>Pressing this button should identify the widget above (i.e. [Widget Counter, AWidget]).</p>
+<button id="AButton">Identify</button>
+<script>
+require(["dojo/parser", "dojo/on", "dojo/dom", "dijit/registry", "dojo/domReady!"],
+    function(parser, on, dom, registry) {
+        // parser.parse is needed, apparently even with parseOnLoad: true
+        // http://dojotoolkit.org/reference-guide/1.9/dijit/info.html
+        // http://dojotoolkit.org/reference-guide/1.9/dijit/registry.html
+        parser.parse();
+        var myButton = dom.byId("AButton");
+        var myWidget = registry.byId("AWidget");
+        on(myButton, "click", function(evt){
+          dom.byId("textNode3").innerHTML = "myWidget:" + myWidget + "<br>";
+        });
+});
+</script>
+<div id="textNode3" style="background-color: lightgray"></div>
+
+<!-- note use of Module ID (MID) syntax for data-dojo-type
+<span data-dojo-type="demo/Counter"></span>
+-->
+
+</body>
+</html>
+

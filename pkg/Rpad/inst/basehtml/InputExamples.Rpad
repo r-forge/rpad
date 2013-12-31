@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+
+
+<head>
+  <title>Rpad Input Examples</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="Rpad_head.js"></script>
+</head>
+
+
+<body>
+<script src="Rpad_body.js"></script>
+
+<h1>Rpad Input Examples</h1>
+
+
+<h4>HTML input elements</h4>
+<p>Rpad supports forms as well as standalone input elements (input, select, radio, checkbox) declared in HTML markup
+(see <a href="../BasicDocumentation.html#HTMLForm">Basic Documentation</a>).
+The 'name' attribute is translated into an R variable name.
+Input elements (outside of widgets, see below) are calculated only if their rpadType attribute is set to "Rvariable" or "Rstring".
+Press F9 or the Calculate Page button to show the R output using values entered in the table.
+</p>
+
+<table width="50%" border="1"><tr valign="top"><td width="50%">
+  myvar1 (Rvariable): <span contenteditable="false"><input name="myvar1" rpadType="Rvariable" value="date()"></span>
+</td><td width="50%">
+  mystring (Rstring): <span contenteditable="false"><input name="mystring" rpadType="Rstring" value="T-10 seconds"></span>
+</td></tr></table>
+
+<input onclick='javascript:rpad.calculatePage()' value='Calculate Page' type='button' >   </input>
+
+<div data-dojo-type="Rpad">
+<pre>
+cat("myvar1 =", myvar1, "\n")
+cat("mystring =", mystring, "\n")
+</pre>
+</div>
+
+
+<h4>Input through widgets</h4>
+<p>Variable assignment and R commands, in input and textarea elements, respectively, can be wrapped into Rpad widgets.
+Unlike standalone input elements, input elements in Rpad widgets are always interpreted as expressions, not strings.
+The WidgetInput button below should calculate the two widgets in the table; output is shown under the textarea box.
+This button invokes the rpadCalculateTree function to calculate the elements contained within a given DOM tree (in this case, the table).
+Note that the Calculate Page button will also calculate the widgets in this table (since they are part of the document tree).
+</p>
+
+<table width="50%" border="1" id="WidgetInput"><tr valign="top"><td width="50%">
+
+  <p>Enter a value for myvar2 here (input)</p>
+  <div data-dojo-type="Rpad" rpadOutput="none">
+  <input name="myvar2" value="rnorm(1)">
+  </div>
+
+</td><td width="50%">
+
+  <p>Enter R code here (textarea)</p>
+  <div data-dojo-type="Rpad">
+    <textarea rows="1" cols="40">
+print(myvar2)
+    </textarea>
+  </div>
+
+</td></tr></table>
+<input onclick='javascript:rpad.calculateTree("WidgetInput")' value="WidgetInput" type="button"></input>
+
+
+
+<h4>Dynamic construction of input elements</h4>
+<p>Dynamic construction of input elements is possible using the corresponding R functions in Rpad (HTMLinput, HTMLselect, HTMLradio, HTMLcheckbox).
+The following example is formulated as a basic Rpad widget, with the source code shown.
+This widget has rpadRun="init", so the select list with a random default state is created only when the page loads.
+Any time the Calculate Page button is pressed, a second widget (source hidden) reports the number of letters in the name of the currently selected state.</p>
+<div data-dojo-type="Rpad" rpadRun="init">
+  <pre>
+  data(state)
+  default &lt;- sample(1:50, 1)
+  HTMLon()
+  HTMLselect("mystate", state.name, default=default)
+  </pre>
+</div>
+
+<div data-dojo-type="Rpad" rpadHideSource=true>
+  cat(paste("The name of the selected state has", nchar(mystate), "letters.\n"))
+</div>
+
+
+</body>
+</html>
+

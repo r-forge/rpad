@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!--
+by Tom Short, EPRI, tshort@epri.com
+(c) Copyright 2005 by EPRI
+license: GNU GPL v2 or greater
+-->
+
+<!--
+modified by Jeffrey Dick December 2013:
+update code for current Dojo implementation,
+clean up help links and add link to DojoTest.Rpad
+-->
+
+
+<head>
+  <title>Rpad Base Page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script type="text/javascript">
+    rpadConfig = {
+      rpadRun: "all",
+      rpadHideSource: true
+    };
+  </script>
+  <!-- the Rpad head section -->
+  <script src="Rpad_head.js"></script>
+</head>
+
+<style>
+.RpadTableHolder TH {padding: 5px; background: transparent;
+                     text-align:right; font-weight:bold;
+                     border: thin none #CCC; }
+.RpadTableHolder TD {padding: 5px; background: transparent;
+                     text-align:right; padding:2px 2px 2px 2px; 
+                     border: thin none #CCC; }
+
+</style>
+
+  <body>
+<!-- the Rpad body section -->
+<script src="Rpad_body.js"></script>
+
+
+<table width="100%"><tr valign="top"><td width="70%">
+<p>Rpad/HTML pages in working directory (click on the link to load the file): </p>
+
+<!--
+<p><span contenteditable="false">
+<a href="blank.Rpad">New Rpad page</a></span><br></p>
+-->
+
+<div data-dojo-type="Rpad">
+<pre>
+.threecolumns = function(lst) {
+    n = length(lst)
+    if (n <= 3) return(as.matrix(lst))
+    ncol = 3
+    nrow = ceiling(n / ncol)
+    lst = as.matrix(append(lst, rep("", ncol * nrow - n)))
+    dim(lst) = c(nrow, ncol)
+    lst
+}
+.rpadfiles = grep('\\.html$|\\.rpad$', dir(), ignore.case = TRUE, value = TRUE)
+.rpadfiles = H("a", href = .rpadfiles, collapseContents = FALSE,
+               .rpadfiles)
+.rpadfiles = .threecolumns(.rpadfiles)
+HTMLon()
+Html(.rpadfiles)
+</pre>
+</div>
+
+<!--
+<p>*.Rdata R binary files  (click to load into R): </p>
+<div data-dojo-type="Rpad">
+<pre>
+.files = grep('\\.RData$', dir(), ignore.case = TRUE, value = TRUE)
+.files = H("a", href = paste('javascript:rpad.send("R", "load(\\\\"',
+                             .files,
+                             '\\\\")")', sep = ""),
+           collapseContents = FALSE,
+           .files)
+.files = .threecolumns(.files)
+HTMLon()
+Html(.files)
+</pre>
+</div>
+-->
+
+<!--
+<p>*.R files  (click to source into R): </p>
+<div data-dojo-type="Rpad">
+<pre>
+.files = grep('\\.R$', dir(), ignore.case = TRUE, value = TRUE)
+.files = H("a", href = paste('javascript:rpad.send("R", "source(\\\\"',
+                             .files,
+                             '\\\\")")', sep = ""),
+           collapseContents = FALSE,
+           .files)
+.files = .threecolumns(.files)
+HTMLon()
+Html(.files)
+</pre>
+</div>
+-->
+
+<p>Objects in user's workspace:</p>
+<div data-dojo-type="Rpad">
+<pre>
+# print(ls.str(), wid = 40, nchar.max = 20, vec.len=2)
+ls()
+</pre>
+</div>
+
+<p>Enter R code here and press
+<input onclick='javascript:rpad.calculatePage()' value='Calculate' type='button'></input>
+or F9 to run it:
+</p>
+<div data-dojo-type="Rpad" rpadRun="normal" rpadHideSource=false>
+  <textarea rows="4" cols="60">
+g1 <- "Hello World!"
+print(g1)
+g2 <- paste(sample(strsplit(g1, "")[[1]]), collapse="")
+print(g2)
+  </textarea>
+</div>
+
+
+</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> <td width="25%">
+<p>Help</p>
+
+<span contenteditable="false">
+<a href="BasicDocumentation.html">Rpad documentation</a><br>
+<a href="ServerNotes.html">Server notes</a><br>
+</span>
+
+<p>Rpad Demos</p>
+
+<span contenteditable="false">
+<a  href="Example1.Rpad">General Example</a><br>
+<a  href="InputExamples.Rpad">Input Examples</a><br>
+<a  href="DojoTest.html">Dojo Test Page</a><br>
+<a  href="RpadTest.Rpad">Rpad Test Page</a><br>
+</span>
+
+<p>Links</p>
+
+<span contenteditable="false">
+<a href="http://cran.r-project.org/doc/contrib/Short-refcard.pdf">Tom Short's R refcard</a><br>
+<a href="http://cran.r-project.org/doc/contrib/Baggott-refcard-v2.pdf">Matt Baggot's R refcard v2</a><br>
+<a href="http://cran.r-project.org/doc/contrib/Liu-R-refcard.pdf">Liu's R refcard</a><br>
+<a href="http://rpad.r-forge.r-project.org">Rpad homepage</a><br>
+<a href="http://www.r-project.org">R homepage</a><br>
+</span>
+
+
+
+</td></tr></table>
+
+<br><br><br>
+<sub>The original author of Rpad is:</sub>
+<br>
+<sub>Tom Short, tshort@epri.com, Copyright 2005. EPRI, license: GNU GPL v2 or greater</sub>
+<br>
+<sub>To contact the current maintainer, see the DESCRIPTION file</sub>
+  </body>
+</html>
+

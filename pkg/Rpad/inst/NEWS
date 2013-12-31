@@ -1,0 +1,136 @@
+CHANGES IN Rpad 1.3.99.0 (2013-12-31)
+-------------------------------------
+
+CHANGES IN R CODE:
+
+- Replace defunct '.find.package' with 'find.package'.
+
+- Remove 'is.nan' call in data.frame method of Html(), which gives
+  the error "default method not implemented for type 'list'".
+
+- Make BR into a function.
+
+CHANGES IN JAVASCRIPT CODE:
+
+- Upgrade Dojo from 1.8.3 to 1.9.2.
+
+- Add app.profile.js and instructions (in README) for building
+  customized dojo.js layer for distribution with Rpad.
+
+- Rpad_body.js now makes more use of Dojo AMD modules, but still uses
+  global variables for DOM traversal and calculation logic.
+
+- Widgets containing HTML input elements are interpreted
+  as variable assignments.
+
+- Interpretation of 'rpadType' attribute is now limited to input
+  elements outside of widgets, and is mandatory for those input
+  elements to be calculated. All Rpad widgets containing HTML textarea
+  elements are interpreted as R commands; saving input to a file is no
+  longer supported.
+
+- Keyboard shortcut F9 (Calculate Page) re-implemented; other function
+  keys dropped.
+
+DOCUMENTATION:
+
+- Add DojoTest.html and RpadTest.Rpad.
+
+- Reconfigure InputExamples.Rpad to show three types of construction
+  (HTML markup, markup with Rpad widgets, generation in R code).
+
+PACKAGE MAINTENANCE:
+
+- Remove debian directory (configuration for Debian packaging).
+
+- Remove localversion directory (scripts for launching Rpad locally).
+
+- Remove basehtml/js directory (syntax highlighting, R help search).
+
+- Remove basehtml/editor directory (GUI for building Rpad pages).
+
+- Remove some help/example pages that are no longer supported:
+  SearchRKeywords.Rpad, UpdateRKeywords.Rpad, GuiExamples.Rpad
+
+- Remove asFilteringTable() and filteringtable CSS code. May be
+  possible later to re-implement this in Dojo 1.9:
+  https://dojotoolkit.org/reference-guide/1.9/dojox/grid/example_Filtering_data.html
+
+- Initial import to R-Forge.
+
+
+CHANGES IN Rpad 1.3.1 (2013-01-07, unreleased)
+----------------------------------------------
+
+OVERVIEW:
+
+- This package was modified from the latest Rpad package archived on
+  CRAN (version 1.3.0, dated 2007-04-24). Changes were made to re-create
+  a working package and to pass R CMD check.
+
+- Not every function has been tested recently. The following should work:
+
+  - Base page started with Rpad()
+
+  - "localversion"
+
+CHANGES TO RESTORE ESSENTIAL FUNCTIONS:
+
+- In guiSource(), change .Internal(eval.with.vis()) to
+  withVisible(eval()).
+  (R 3.0.0: "The .Internal(eval.with.vis) non-API function has been removed.")
+
+- Add an explicit return(str) to HTMLargs(). The implicit return of the for()
+  loop became NULL in R 2.10.0, casusing .R and .html files to not appear
+  as links on the Rpad base page.
+  (R 2.10.0: "for(), while(), and repeat() loops now always return NULL
+    as their (invisible) value.")
+
+CHANGES FOR R CMD check:
+
+- Remove require("graphics") and require("utils") in .onLoad() .
+  ("Package startup functions should not change the search path.")
+
+- Protect require(GDD) with \donttest{} in RpadGraphing.Rd .
+  ("'library' or 'require' call not declared from: 'GDD'")
+
+- In processRpadCommands(), access textConnection result using get() .
+  ("no visible binding for global variable 'textfromconnection'")
+
+- In newDevice(), change call to png() .
+  ("partial argument match of 'file' to 'filename'")
+
+- Rename hidden file inst/basehtml/.RpadStartup.R to RpadStartup.R .
+
+- Remove hidden file inst/localversion/.Rprofile . 
+
+CHANGES IN JAVASCRIPT (Dojo):
+
+- upgrade Dojo from 0.4.1 to 1.8.3
+
+- major changes to Rpad_main.js
+
+  - change dojo.provide to define
+
+  - change dojo.event.connect to dojo.connect
+
+  - change syntax in definition of Rpad widget
+
+    - method fillInTemplate -> postCreate
+
+  - change dojoType to data-dojo-type
+
+  - change dojo.io.bind to dojo.xhr
+
+  - change dojo.onkey to dojo.onkeypress
+
+  - use domReady! (AMD API) instead of dojo.connect to start rpad.init
+
+  - template: change dojoAttachPoint to data-dojo-attach-point  
+
+  - key F11 removed (djConfig.isDebug)
+
+  - get widget instance with dijit.byNode() instead of dojo.widget.getWidgetsByFilter()
+
+  - change widget method fillInTemplate to postCreate
+

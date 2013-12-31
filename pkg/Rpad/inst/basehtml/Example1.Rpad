@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- by Tom Short, EPRI, tshort@epri.com
+(c) Copyright 2005 by EPRI
+
+Licence
+=======
+
+    This is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+ -->
+
+<!-- modified by Jeffrey Dick to use new Dojo framework, December 2013 -->
+
+  <head>
+    <title>Rpad Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="Rpad_head.js"></script>
+
+  </head>
+
+  <body>
+<script src="Rpad_body.js"></script>
+<table><tr valign="top"><td>
+<p>Here is a basic R input section followed by the output: </p>
+
+<div data-dojo-type="Rpad" rpadRun="init">
+<pre>
+data(iris)
+dataset = iris
+options(width=50)
+summary(dataset)
+</pre>
+</div>
+
+<p>In the following section, you can edit the code and then run the calculation by pressing Calculate.
+The example shows an R data frame formatted for HTML output.</p>
+<input onclick=
+      "javascript:rpad.calculatePage()" value="Calculate" type=
+      "button"></input>
+
+<div data-dojo-type="Rpad">
+<textarea rows="4" cols="50">
+HTMLon()
+Html(head(dataset))
+</textarea>
+</div>
+
+</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> <td>
+<p>Here is a simple distribution plotting example with a lognormal
+distribution with meanlog=10 and variable logsd.
+The Calculate button also refreshes this plot.
+</p>
+
+<p>
+<div data-dojo-type="Rpad" rpadOutput="none">
+<input name="sdlog" value="2">
+</div>
+Standard deviation<br>
+</p>
+
+<div data-dojo-type="Rpad">
+<pre>
+plot(function(x) dlnorm(x, meanlog = 5, sdlog = sdlog), 
+     0, 100, main = "lognormal density", ylab="",
+     xlab="", col="red")
+HTMLon()
+showgraph()
+</pre>
+</div>
+
+<p>Here is another graphic: </p>
+
+<div data-dojo-type="Rpad" rpadRun="init">
+<pre>
+data(volcano)
+z <- 2 * volcano; x <- 10 * (1:nrow(z)); y <- 10 * (1:ncol(z))
+persp(x, y, z, theta = 135, phi = 30, col = "green3", 
+      scale = FALSE, ltheta = -120, shade = 0.75, 
+      border = NA, box = FALSE)
+HTMLon()
+showgraph()
+</pre>
+</div>
+
+
+</td></tr></table>
+
+<br><br><br><sub>by Tom Short, tshort@epri.com, Copyright
+  2005 EPRI, license: GNU GPL v2 or greater</sub>
+  </body>
+</html>
+

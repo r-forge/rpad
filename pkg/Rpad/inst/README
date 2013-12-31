@@ -1,0 +1,28 @@
+This is the Rpad "inst" directory
+
+README           this file
+ChangeLog        old ChangeLog, from Rpad 1.3.0 (April 2007)
+NEWS             current NEWS
+tcl/             HTTP server written in TCL
+server/          Perl files for the server version of Rpad
+basehtml/        The Javascript, CSS and example HTML files for Rpad
+app.profile.js   Application build profile for Dojo customization
+LICENSE.dojo     License for the Dojo toolkit (http://dojotoolkit.org/)
+
+--------
+Parts of app.profile.js were adapted from the Dojo boilerplate:
+  https://github.com/csnover/dojo-boilerplate
+The Dojo sources, located in the following directories, are present on
+the build machine, but are not distributed with the Rpad pacakge.
+--------
+
+src/dojo/       dojo package
+src/dijit/      dijit package
+src/util/       util package
+dist/           The destination of the optimized JS files
+
+--------
+The Dojo build used by Rpad is compiled by running:
+  src/util/buildscripts/build.sh --profile app.profile.js
+Then copy the resulting dojo.js to basehtml/ for use with Rpad:
+  cp dist/dojo/dojo.js basehtml/

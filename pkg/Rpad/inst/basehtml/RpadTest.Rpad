@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+
+
+<head>
+  <title>Rpad Test Page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="Rpad_head.js"></script>
+</head>
+
+
+<body>
+<!-- NOTE: we put Rpad.js in the HTML body because the widget definition
+     (not instantiations) references the document body, causing an exception
+     (doc.body is null) when using the customized Dojo build (but not the generic
+     distribution - could this be solved by including Rpad_main.js in the layer?) -->
+<script src="Rpad_body.js"></script>
+
+<h1>Rpad Test Page</h1>
+<p>Each item should appear below as described.
+R input blocks (class "Rpad_input") have a white background, and R output blocks (class "Rpad_results") have a yellow background.
+R output blocks are not visible until the widget has been calculated.
+</p>
+
+<!--
+<h4>The value of JavaScript variable "rpad.dir"</h4>
+<p>TODO: This should be "testtesttest", indicating successful login to the HTTP server</p>
+<p>value of rpad.dir:
+  <script type="text/javascript">
+    require(["dojo/on"], function(on){
+      on(rpad, "afterLogin", function(e){
+        // remove listener after first event
+        //signal.remove();
+        // do something else...
+        //alert("AAAA"+rpad.dir);
+        alert("AAAA");
+        document.write(rpad.dir);
+      });
+    });
+  </script>
+<p>
+-->
+
+
+<h4>An Rpad widget with default attributes</h4>
+<p>A simple counting program in R is visible, followed by the result.
+The widget's rpadRun attribute is "normal" (the default).
+The output should be empty when the page first loads, and increment starting from 1 each time the "Calculate Page" button is pressed.
+Pressing this button calculates all widgets on the page with the rpadRun attribute set to "normal" or "all".
+</p>
+<div data-dojo-type="Rpad">
+  ( if(!exists("aaa")) aaa <- 1 else aaa <- aaa + 1 )
+</div>
+<input onclick='javascript:rpad.calculatePage()' value='Calculate Page' type='button' >   </input>
+
+<h4>Rpad widgets with custom attributes</h4>
+<p>There are 3 counting widgets in the table below. In each one, the rpadHideSource attribute is set to true, so the sources should not be visible. The CalculateNone button specifically calculates the last of these widgets. The <a href="http://dojotoolkit.org/documentation/tutorials/1.9/events/">dojo/on</a> event API is used to connect the button click to the calculate method of the widget.</p>
+<table width="70%" border="1"><tr valign="top"><td width="30%">
+
+  <p>rpadRun="init": Calculate on page load/reload only<p>
+  <div data-dojo-type="Rpad" rpadHideSource=true rpadRun="init">
+    ( if(!exists("xxx")) xxx &lt;- 1 else xxx &lt;- xxx + 1 )
+  </div>
+
+</td><td width="30%">
+
+  <p>rpadRun="all": Calculate on page load/reload or with "Calculate Page" button<p>
+  <div data-dojo-type="Rpad" rpadHideSource=true rpadRun="all">
+    ( if(!exists("yyy")) yyy &lt;- 1 else yyy &lt;- yyy + 1 )
+  </div>
+
+</td><td width="30%">
+
+  <p>rpadRun="none": Calculate only with "CalculateNone" button<p>
+  <div data-dojo-type="Rpad" rpadHideSource=true rpadRun="none" id="NoneWidget">
+    ( if(!exists("zzz")) zzz &lt;- 1 else zzz &lt;- zzz + 1 )
+  </div>
+
+</td></tr></table>
+
+<button id="NoneButton">CalculateNone</button>
+<script>
+require(["dojo/parser", "dojo/on", "dojo/dom", "dijit/registry", "dojo/domReady!"],
+    function(parser, on, dom, registry) {
+        parser.parse();
+        var myButton = dom.byId("NoneButton");
+        var myWidget = registry.byId("NoneWidget");
+        on(myButton, "click", function(evt){
+          myWidget.calculate();
+        });
+});
+</script>
+
+
+
+
+</body>
+</html>
+

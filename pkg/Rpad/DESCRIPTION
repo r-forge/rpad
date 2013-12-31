@@ -1,0 +1,17 @@
+Package: Rpad
+Title: Workbook-style, web-based interface to R
+Version: 1.3.99.0
+Author: Tom Short (EPRI), Philippe Grosjean (UMH EcoNum), Jeffrey Dick
+Description: A workbook-style user interface to R through a web
+        browser. Provides convenient interaction with an R process
+        through HTML input elements, and plotting and other HTML output
+        routines. Uses the Dojo toolkit (http://dojotoolkit.org) to
+        help build responsive web pages with Javascript. Can be used
+        with R in standalone mode or with a webserver to serve Rpad
+        pages to other users.
+Depends: graphics, utils, grDevices
+Suggests: tcltk, R2HTML
+LazyLoad: no
+Maintainer: Jeffrey Dick <j3ffdick@gmail.com>
+License: GPL (>= 2)
+URL: http://rpad.r-forge.r-project.org
