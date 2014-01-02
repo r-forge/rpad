@@ -79,11 +79,3 @@ INPUT[rpadType="Rstring"] {color:blue}
                      text-align:right; padding:2px 2px 2px 2px; 
                      border: thin solid #CCC; }
 
-.RpadTableHolder .tableheaderrow  {
-/* 
-    cursor: pointer ;
-    behavior:url(js/tablesort.htc);
-    -moz-binding: url(../js/moz-behaviors.xml#tablesort.htc);
-*/
-}
-

@@ -22,8 +22,6 @@ Licence
 
  -->
 
-<!-- modified by Jeffrey Dick to use new Dojo framework, December 2013 -->
-
   <head>
     <title>Rpad Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -64,12 +62,22 @@ distribution with meanlog=10 and variable logsd.
 The Calculate button also refreshes this plot.
 </p>
 
+<!-- 
+TODO: it appears that input elements in widgets don't work with
+the CGI implementation, because of requests that look like
+-->
+
 <p>
-<div data-dojo-type="Rpad" rpadOutput="none">
+<div data-dojo-type="Rpad">
 <input name="sdlog" value="2">
 </div>
 Standard deviation<br>
 </p>
+<div data-dojo-type="Rpad">
+<pre>
+print(sdlog)
+</pre>
+</div>
 
 <div data-dojo-type="Rpad">
 <pre>

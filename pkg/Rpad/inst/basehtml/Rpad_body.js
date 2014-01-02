@@ -204,6 +204,7 @@ rpad.send = function(commands, rpadResults, rpadInput) {
   // Send "commands" for processing. 
   // Put results received in the DOM node "rpadResults".
   // Send along the originating DOM node "rpadInput" in case it's needed.
+//alert("in rpad.send, commands = "+commands);
   require(["dojo/request"], function(request){
       // The target URL on your webserver:
       request.get("server/R_process.pl", {
@@ -220,7 +221,7 @@ rpad.send = function(commands, rpadResults, rpadInput) {
       rpad.receive(rpadResults, response, rpadInput);
     }, function(err){
       // Event handler on errors:
-      alert("error in rpad.send");
+      alert("Error in rpad.send. Did R stop running?\n"+err);
     });
   });
 }
@@ -325,18 +326,24 @@ rpad.processRForm = function(nodes) {
             command = name + " = '" + node.value + "'";
         } else if (node.nodeName.toLowerCase() == "select" && node.selectedIndex >= 0)
           command = name + " = '" + node[node.selectedIndex].text.replace(/'/g,"\\\'") + "'"
-        else if (node.type == "text" || node.type == "hidden")
+        else if (node.type == "text" || node.type == "hidden") {
           if (node.getAttribute("rpadType") == "Rvariable" && node.value != "") {
             command = name + " = " + node.value; 
           }
           else if (node.getAttribute("rpadType") == "Rstring" && node.value != "") {
             command = name + " = '" + node.value.replace(/'/g,"\\\'") + "'";
           }
+        }
         commands = commands + command + "\n";
-//alert("processRForm node.type="+node.type+" commands="+commands);
     }
-    if (commands != "") {
+//alert("processRForm node.type="+node.type+" commands="+commands);
+    if (commands != "" && commands != "\n") {
         rpad.send(commands, null, nodes[0]);
+    } else if (commands == "\n") {
+        // the \n by itself, caused by an input field in an Rpad widget (not Rvariable or Rstring)
+        // results in a spurious R command that breaks R communication in the CGI implementation,
+        // but we do need to keep going to calculate the next nodes
+        rpad.calculateNextNode(nodes[0]);
     }
 }  
    
@@ -447,9 +454,10 @@ rpad.calculateNode = function(node) {
                 rpad.processRForm(node.elements);
                 return true;
             }
-            // process standalone input fields individually
+            // process standalone input fields (but not buttons) individually
             if ((node.nodeName == "INPUT" || node.nodeName == "SELECT") &&
                 node.getAttribute("name") != "" &&
+                node.type != "button" &&
                 rpad._hasNoFormParent(node)) {
                     rpad.processRForm(node);
                     return true;
@@ -507,27 +515,30 @@ require(["dojo/domReady!"], function(){
   require(["dojo/request"], function(request){
     
       // The target URL on your webserver:
+      // initialize Rpad
       request.get("server/Rpad_process.pl?command=login", {
       // The used data format.
       handleAs: "text"
 
     }).then(function(response){
-      
       // Event handler on successful call:
-      // The target URL on your webserver:
+      // Save the location of the rpad temporary directory and start an R process
+      rpad.dir = response;
       request.get("server/R_process.pl?ID="+response+"&command=login", {
         handleAs: "text"
       }).then(function(response){
         // this is where we want to be! let's calculate the page
         if(rpad._runState == "init") rpad.calculatePage();
       }, function(err){
-        alert("error in rpad.login step 2/2");
+        // (The missingness of Statistics::R might cause this error on the server version of Rpad, not the local version)
+        alert("Error in rpad.login step 2/2. Is the Statistics::R Perl module installed? Error:\n"+err);
       });
 
     }, function(err){
 
       // Event handler on errors:
-      alert("error in rpad.login step 1/2");
+      // (The missingness of Rpad_process.pl will cause this error on the server version of Rpad, not the local version)
+      alert("Error in rpad.login step 1/2. Is the Rpad/server/Rpad_process.pl file present on the HTTP server?");
 
     });
   });

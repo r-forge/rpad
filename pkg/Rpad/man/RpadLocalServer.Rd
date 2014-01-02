@@ -19,8 +19,8 @@ The intranet/internet version works in client-server fashion with the user acces
 }
 
 \usage{
-  Rpad(file = "", defaultfile = "LocalDefault.Rpad", port = 8079)
-  startRpadServer(defaultfile = "LocalDefault.Rpad", port = 8079)
+  Rpad(file = "", defaultfile = "index.html", port = 8079)
+  startRpadServer(defaultfile = "index.html", port = 8079)
   stopRpadServer()
 }
 

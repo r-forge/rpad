@@ -36,13 +36,13 @@ function() {
 
 
 "Rpad" <-
-function(file = "", defaultfile = "LocalDefault.Rpad", port = 8079) {
+function(file = "", defaultfile = "index.html", port = 8079) {
     startRpadServer(defaultfile, port)
     browseURL(paste("http://127.0.0.1:", port, "/", file, sep = ""))
 }
 
 "startRpadServer" <-
-function(defaultfile = "LocalDefault.Rpad", port = 8079) {
+function(defaultfile = "index.html", port = 8079) {
     require("tcltk")
     # This is the main function that starts the server
 	# This function implements a basic http server on 'port'

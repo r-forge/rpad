@@ -30,15 +30,8 @@ Licence
   <body>
       <h2>Installation of the Server Version</h2>
 
-      <p>Rpad has been setup with Linux using the Apache server, with
-      either Apache 1.3 or Apache 2.0. It may
-      well work on others, but this was the easiest option. Under
-      windows, it has also been tested with Apache
-      (although it doesn't seem as responsive as apache under linux). I have
-      also had good experiences using Rpad with coLinux (www.colinux.org) under
-      win2k with R, Apache, and mod_perl. Rpad can be installed using
-      CGI for the perl portion or with mod_perl. These directions
-      describe installation with mod_perl:</p>
+      <p>This document outlines the setup of the server version of Rpad on Linux using Apache 2.4.
+      The Perl portion of the Rpad interface can be installed using CGI or mod_perl.</p>
 
       <p>The main steps to installing Rpad on a server are:</p>
 
@@ -47,49 +40,54 @@ Licence
 
         <li>Install the R2HTML package from CRAN.</li>
 
-        <li>Install the Rpad package from CRAN.</li>
+        <li>Install the Rpad package from CRAN.
+        Note: for server version, Rpad and all other referenced R packages must be
+        installed at the system level.</li>
 
         <li>Install Apache.</li>
 
-        <li>Install mod_perl. This is optional. Rpad can also be run
-        with CGI. </li>
+        <li>Install mod_perl (optional, but faster than CGI). </li>
 
         <li>Copy the directory basehtml in Rpad's package directory to
-        /www/var (or wherever your server root is). Rename as
+        /var/www (or wherever your server root is). Rename as
         appropriate. For example: </li>
 <pre>
 cp -r /usr/lib/R/library/Rpad/basehtml /var/www/Rpad
 </pre>
 
-        <li>Enable write access to the Rpad directory as well as the
-        Rpad/server directory.</li>
+        <li>Ensure the webserver user (e.g. apache) has write access to the /tmp directory.</li>
 
         <li>Enable execution of all of the Rpad/server/*.pl files
         (chmod a+x).</li>
 
-        <li>Install the Statistics-R_perl_interface that comes with Rpad
-        in the serverversion directory. This version has slight
-        modifications to Graciliano's R-Statistics 
-        version 0.02).</li>
+        
+        <li>Install the required Perl modules (all available on CPAN):</li>
+        
+        <ul>
+        <li>Statistics::R (tested with version 0.32; don't use the old 0.02!) (and dependencies IPC::Run, Regexp::Common, Text::Balanced).
+        Used to control an R process through Perl.</li>
 
-        <li>Change the server configuration as appropriate to enable
-        CGI and/or mod_perl. Tell the browser not
-        to cache some files which might change during a
-        session, using the mod_expires module. Here is the portion of the httpd.conf for Apache 1.3
-        to do this for Rpad files in /var/www/Rpad:</li>
+        <li>Linux::Inotify2 (and its dependency, common:sense). Used to monitor file changes
+        so that incoming R commands can be executed by a backgrounded Perl/R bridge.</li>
+
+        <li>Time::Out. Used to time out waiting for R results (10 seconds), and to destroy the background
+        Perl/R bridge (10 minutes, after which the temporary directory is cleared and the R and Perl processes exit).</li>
+        </ul>
+
+        
+        </li>
+
+        <li>Update the HTTP server configuration file to enable execution of the Perl scripts.
+        Also, add a mime type to tell the server to serve .Rpad files as text/html, and
+        use mod_expires to tell the browser not to cache some files which might change
+        during a session. Here is the portion of the httpd.conf for Apache 2.4
+        to do this using CGI:</li>
 
       </ul>
 
 <pre>
+LoadModule cgi_module modules/mod_cgi.so
 &lt;Directory /var/www/Rpad/server*>  
-  &lt;IfModule mod_perl.c>
-    &lt;Files *.pl> # requires mod_perl
-      SetHandler perl-script
-      PerlHandler Apache::Registry
-      Options +ExecCGI
-      PerlSendHeader ON
-    &lt;/Files>
-  &lt;/IfModule>
   Options +ExecCGI
   AddHandler cgi-script .pl
   &lt;IfModule mod_expires.c>
@@ -97,65 +95,34 @@ cp -r /usr/lib/R/library/Rpad/basehtml /var/www/Rpad
     ExpiresDefault "now plus 0 seconds"
   &lt;/IfModule>
 &lt;/Directory>
-AddType text/x-component .htc
 AddType text/html .Rpad
 </pre>
 
       <ul>
-        <li>Here's a portion of the httpd.conf to configure Rpad for
-      Apache2 for files in /var/www/Rpad:</li>
+        <li>This is what it might look like when using mod_perl:</li>
       </ul>
 
 <pre>
+LoadModule perl_module modules/mod_perl.so
 &lt;Directory /var/www/Rpad/server*>  
   &lt;IfModule mod_perl.c>
     &lt;Files *.pl> # requires mod_perl
       SetHandler perl-script
-      PerlResponseHandler ModPerl::PerlRun
+      PerlResponseHandler ModPerl::Registry
       PerlOptions +ParseHeaders
-      Options -Indexes +ExecCGI
+      Options +ExecCGI
     &lt;/Files>
   &lt;/IfModule>
-  Options +ExecCGI
-  AddHandler cgi-script .pl
   &lt;IfModule mod_expires.c>
     ExpiresActive on
     ExpiresDefault "now plus 0 seconds"
   &lt;/IfModule>
 &lt;/Directory>
-AddType text/x-component .htc
 AddType text/html .Rpad
 </pre>
 
-      <ul>
-        <li>Add a mime type to tell the server to serve .Rpad files as
-        text/html (done in the httpd.conf files above).</li>
-        <li>To get the help menu item to work, create a symlink R to /usr/lib/R
-      in the /www/var/Rpad directory (ln -s /usr/lib/R /var/www/Rpad/R).</li>
-        <li>To update the javascript database for the R keyword search
-      page (SearchRKeywords.html), source makeHelpTemplate.R from
-      within R in the main Rpad directory.</li>
-      </ul>
 
-      <h2>Notes on Debian</h2>
-
-<p>This is the main platform that Debian's been tested on, and
-<a href="http://www.Rpad.org">www.Rpad.org</a> is a Debian
-server. Debian packages for Rpad are available at <a
-href="http://www.Rpad.org">www.Rpad.org</a>. Installing the Rpad
-package does all of the installation steps described above. Under
-Debian, Rpad will work with apache or apache2, and it will work with
-or without mod_perl on either version of apache.</p>
-
-<p>There's also a script that will install the Rpad html files. It is located in the
-serverversion directory within the Rpad package directory. It's called
-installRpadWWW.sh. This creates another Rpad directory. In
-addition to copying the base html files, it sets permissions and configures
-apache properly for that directory. Here's an example:
-</p>
-<pre>
-/usr/local/lib/R/site-library/Rpad/installRpadWWW.sh /var/www/RpadTesting
-</pre>
+      <h2>Additional Notes</h2>
 
 <p>I normally add a cron job to restart the Apache server once a
 day. This clears out any R processes that didn't get killed for
@@ -166,49 +133,10 @@ whatever reason. I create the following as the file /etc/cron.daily/Rpad-cleanup
    rm -rf /var/www/Rpad/server/dd*
 </pre>
 
-
-      <h2>Notes on Apache 1.3 under Windows</h2>
-
+<p>Some considerations for Windows:</p>
 
 <pre>
-# Installing apache_1.3.33-win32-x86-no_src.msi downloaded from
-# www.apache.org using CGI
-# Windows 2000
-# Perl 5.8.4 installed at C:/apps/perl
-# Installed Apache at C:/Program Files/Apache Group/Apache
-# WWW root is at C:/Program Files/Apache Group/Apache/htdocs
-
-# Copied the directory basehtml directory to htdocs\Rpad
-xcopy/I/S "C:\Program Files\R\rw2001\library\Rpad\basehtml" "C:\Program Files\Apache Group\Apache\htdocs\Rpad"
-
-# Added a mime type for .Rpad files in conf\mime.types as follows:
-text/html			Rpad
-
-#Installed Statistics-R_perl_interface:
-cd C:\Program Files\R\rw2001\library\Rpad\serverversion\Statistics-R_perl_interface
-perl Makefile.pl
-nmake
-nmake install
-# you can also just copy the directory
-# C:\Program Files\R\rw2001\library\Rpad\serverversion\Statistics-R_perl_interface\lib\Statistics
-# to C:\apps\perl\site\lib (or wherever your perl lib's are)
-
-# Add the following to the conf\httpd.conf file to read .pl files as CGI:
-AddHandler cgi-script .pl
-
-# Changed the following in the conf\httpd.conf file to enable CGI:
-    Options Indexes FollowSymLinks MultiViews
-# to 
-    Options Indexes FollowSymLinks MultiViews ExecCGI
-
-# Added the following line as the first line to the 3 perl files in
-# htdocs\Rpad\server to point to perl 
-#!c:/apps/perl/bin/perl.exe 
-
-# I also futzed with the permissions on these files, but I don't know
-# that it was necessary.
-
-# Used R's png driver rather than ghostscript: in .RpadStartup.R,
+# Used R's png driver rather than ghostscript: in RpadStartup.R,
 # uncommented the following line: 
 # 
 graphoptions(type="Rpng")
@@ -230,77 +158,9 @@ starting as a service has access to the whole file system.
 You need to change the user for the apache service and 
 set permissions for that user to prevent access to unwanted
 parts of your hard drive. Google for "apache localsystem ntfs permissions".
-
 </pre> 
 
 
-      <h2>Notes on Apache 2.0 under Windows</h2>
-
-<p>Installing Rpad on an apache2 installation (cgi mode) on Windows 2000
-worked exactly the same as the Apache 1.3 installation. </p>
-
-<p>I briefly tried Rpad with apache2/modperl under windows. In very limited
-testing, it worked okay. Modperl under windows can make Apache very slow, at least to start
-and stop. A server restart can take over 10 seconds on my win2k
-laptop. </p>
-
-      <h2>Notes on the Windows IIS server</h2>
-
-<p>WARNING: Users (including me) have reported problems installing
-Rpad on IIS. I've got a Windows 2000 machine with IIS running fine. In
-another installation on XP (also using IIS v5.1), it refuses to start
-R (the perl part works, it just won't spawn another process). </p>
-
-<p>Installing Rpad on the IIS server that came with Windows 2000
-worked mainly the same as the Apache 1.3 installation. Here are some
-further notes:</p>
-
-<pre> 
-# Copied the directory basehtml directory to wwwroot\Rpad
-xcopy/I/S "C:\Program Files\R\rw2001\library\Rpad\basehtml" "C:\Inetpub\wwwroot\Rpad"
-
-#Installed the Statistics-R_perl_interface as outlined above.
-
-## NOTE: This step shouldn't be needed anymore! It should figure it out right,
-## but I left it in so you can try it if things don't work right.
-# In C:\Inetpub\wwwroot\Rpad\server\R_process.pl, change the following
-# lines from:
-my $R = Statistics::Rpad->new(
-#                           log_dir => '/var/www/Rpad/server/' . $Rpad_ID
-                           log_dir => $dir . $Rpad_ID
-                           ) ;
-# to:
-my $R = Statistics::Rpad->new(
-                           log_dir => 'c:/Inetpub/wwwroot/Rpad/server/' . $Rpad_ID
-#                           log_dir => $dir . $Rpad_ID
-                           ) ;
-
-# In the IIS "properties" tab, change the following:
-# Under Http Headers|File Types...|New Type..., entered a Content type
-# of text/html for an Associated Extension of Rpad
-# Under Home Directory|Configuration...|App Mappings,
-# added a Extension for pl with an Executable of 
-# C:\apps\Perl\bin\perl5.8.4.exe %s %s
-
-# Used R's png driver rather than ghostscript: 
-# in c:/Inetpub/wwwroot/Rpad/.RpadStartup.R,
-# uncommented the following line: 
-# 
-graphoptions(type="Rpng")
-
-# In c:/Inetpub/wwwroot/Rpad/.RpadStartup.R, uncommented 
-# the following lines to properly specify the location for graphs.
-#
-## NOTE: This step shouldn't be needed anymore! It should figure it out right,
-## but I left it in so you can try it if things don't work right.
-assign("RpadDir", envir = Rpad:::.RpadEnv,
-       gsub("c:/Inetpub/wwwroot","", getwd(), ignore.case = TRUE) )
-
-I didn't know how to disable caching on the pages served from Rpad/server*.
-
-As with apache, you need to lock down the file permissions. Google
-for IIS and IUSR. Also look for "IIS Lockdown Tool". 
-</pre> 
 
       <h2>Troubleshouting server installations</h2>
 
@@ -355,12 +215,16 @@ execution.</p>
 
 <p>If graphics appear locally but not on remote machines, it indicates
 a problem with finding the URL for the graphics files. You may have to
-modify the Rpad/.RpadStartup.R to explicitly tell R where to find
+modify the Rpad/RpadStartup.R to explicitly tell R where to find
 the graphics files, like:</p>
 assign("RpadDir", envir = Rpad:::.RpadEnv,
        gsub("c:/Inetpub/wwwroot","", getwd(), ignore.case = TRUE) )
 
-<br><br><br><sub>by Tom Short, tshort@epri.com, Copyright 2005. EPRI, license: GNU GPL v2 or greater</sub>
+<br><br><br>
+
+<sub>Original author:</sub>
+<sub>by Tom Short, tshort@epri.com, Copyright 2005. EPRI, license: GNU GPL v2 or greater</sub>
+<sub>Last updated 2014-01-01 by Jeffrey Dick.</sub>
 
   </body>
 </html>

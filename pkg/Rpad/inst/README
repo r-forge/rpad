@@ -1,13 +1,14 @@
 This is the Rpad "inst" directory
 
-README           this file
-ChangeLog        old ChangeLog, from Rpad 1.3.0 (April 2007)
-NEWS             current NEWS
-tcl/             HTTP server written in TCL
-server/          Perl files for the server version of Rpad
-basehtml/        The Javascript, CSS and example HTML files for Rpad
-app.profile.js   Application build profile for Dojo customization
-LICENSE.dojo     License for the Dojo toolkit (http://dojotoolkit.org/)
+README            This file
+ChangeLog         Old ChangeLog, from Rpad 1.3.0 (April 2007)
+NEWS              Current NEWS
+tcl/              Local HTTP server in TCL
+basehtml/         The Javascript, CSS and example HTML files for Rpad
+basehtml/server/  Perl files for the server version of Rpad
+perl_interface/   Statistics::Rpad Perl module, based on Statistics::R
+app.profile.js    Application build profile for Dojo customization
+LICENSE.dojo      License for the Dojo toolkit (http://dojotoolkit.org/)
 
 --------
 Parts of app.profile.js were adapted from the Dojo boilerplate:
