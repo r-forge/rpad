@@ -1,4 +1,4 @@
-CHANGES IN Rpad 1.3.99.1 (2014-01-02)
+CHANGES IN Rpad 1.3.99.2 (2014-01-04)
 -------------------------------------
 
 - Restore Perl files related to server version of Rpad
@@ -12,8 +12,8 @@ CHANGES IN Rpad 1.3.99.1 (2014-01-02)
 
 - Major revision of R_process.pl. Now uses a recent Statistics::R
   (tested with version 0.32), forks a background Perl process,
-  uses Linux:Inotify to become aware of R commands and Time:Out
-  to self-destruct.
+  uses Linux:Inotify to become aware of R commands, and attempts to
+  to self-destruct after 10 minutes.
 
 CHANGES IN Rpad 1.3.99.0 (2013-12-31)
 -------------------------------------
