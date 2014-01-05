@@ -1,4 +1,4 @@
-CHANGES IN Rpad 1.3.99.2 (2014-01-04)
+CHANGES IN Rpad 1.3.99.3 (2014-01-05)
 -------------------------------------
 
 - Restore Perl files related to server version of Rpad
@@ -14,6 +14,9 @@ CHANGES IN Rpad 1.3.99.2 (2014-01-04)
   (tested with version 0.32), forks a background Perl process,
   uses Linux:Inotify to become aware of R commands, and attempts to
   to self-destruct after 10 minutes.
+
+- Remove guiSource() (used to parse and evaluate the commands from an
+  Rpad input block - R's source() suffices).
 
 CHANGES IN Rpad 1.3.99.0 (2013-12-31)
 -------------------------------------

@@ -1,5 +1,4 @@
 \name{RpadHTML}
-\alias{ROutputFormat}
 \alias{HTMLon}     
 \alias{HTMLoff}    
 \alias{H}     
@@ -7,11 +6,6 @@
 \alias{HtmlTree.default}     
 \alias{Html}     
 \alias{HfromHTML}
-\alias{HTMLh1}     
-\alias{HTMLh2}     
-\alias{HTMLh3}     
-\alias{HTMLh4}     
-\alias{HTMLh5}     
 \alias{HTMLargs}      
 \alias{HTMLtag}      
 \alias{HTMLetag}      
@@ -25,12 +19,11 @@
 \alias{BR}     
 \alias{print.condition}
                    
-\title{ Rpad utilities }
+\title{ HTML utilities }
 \description{      
   Rpad utilities to generate HTML output.
 }
 \usage{
-  ROutputFormat(Format)
   HTMLon()
   HTMLoff()
   HtmlTree(tagName, ...)
@@ -38,11 +31,6 @@
   \method{HtmlTree}{default}(tagName, ..., standaloneTag = FALSE, collapseContents = TRUE)
   Html(x, ...)
   BR()
-  HTMLh1(text)
-  HTMLh2(text)
-  HTMLh3(text)
-  HTMLh4(text)
-  HTMLh5(text)
   HTMLargs(x)
   HTMLtag(tagName, ...)
   HTMLetag(tagName)
@@ -52,14 +40,13 @@
     contenteditablewrapper = TRUE, optionvalue = text, ...)
   HTMLinput(name, value = "", rpadType = "Rvariable", contenteditablewrapper = TRUE, ...)
   HTMLlink(url, text, ...)
-  HTMLimg(filename = RpadPlotName(), ...)
+  HTMLimg(filename = get("plot.name", envir = .RpadEnv), ...)
   HTMLembed(filename, width = 600, height = 600, ...)
   HfromHTML(x)
   print.condition(x, ...)
 }
 
 \arguments{
-  \item{Format}{ a string specifying the desired output format, like "html", "text", or "none" }
   \item{text}{ specifies the text to be displayed in the HTML output. }
   \item{tagName}{ is a string specifying the HTML nodeName ("H1" or
     "DIV" for example). }
@@ -141,13 +128,21 @@ This will affect how quoted strings should be passed as elements.
 
   # generate some GUI elements
   # - normally done in an Rpad input section with rpadRun="init"
-  HTMLon() # switch to html mode
+  # switch to html mode
+  HTMLon()
   data(state)
-  HTMLselect("favoriteAmericanState", state.name) # generate the select box
+  # generate the select box
+  HTMLselect("favoriteAmericanState", state.name)
 
-  H("div", "Hello world") # a simple div: "<div>Hello world</div>"
-  H("div", class="helloStyle", "Hello world") # a div with a class
-    # --> "<div class='helloStyle'>Hello world</div>"
+  # using the H() function
+  # a heading
+  H("h2", "Arizona")
+
+  # a simple div: "<div>Hello world</div>"
+  H("div", "Hello world")
+  # a div with a class
+  # "<div class='helloStyle'>Hello world</div>"
+  H("div", class="helloStyle", "Hello world")
 
   # you can nest them:
   H("div", class = "myClass", dojoType = "tree",
@@ -158,7 +153,8 @@ This will affect how quoted strings should be passed as elements.
       "text in the div",
       c(1,5,8)))
 
-  HTMLoff() # switch to text mode
+  # switch to text mode
+  HTMLoff()
   summary(a)
 
   # fancy HTML output with R2HTML

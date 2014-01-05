@@ -1,10 +1,3 @@
-# 
-#
-#
-#
-#
-#
-
 "Html" <- function(x,...) { 
   UseMethod("Html") 
 }
@@ -118,23 +111,6 @@
 }
 
 
-# broken:
-#"HtmlTree.list" <- "Html.list" <- function (x, first = TRUE, ...) {
-#  res = rep(H("dum"), length = 2*length(x))
-#  res[seq(1, 2*length(x), by = 2)] = H(NULL, names(x), collapseContents = FALSE)
-#  res[seq(2, 2*length(x), by = 2)] = sapply(x, FUN = function(x)
-#       H("ul",
-#         Html(x, first = FALSE)))
-#  if (first)  # IE needs contenteditable off
-#    H("div", contentEditable='false',
-#      H("ul",
-#        H("li",
-#          H(NULL, res))))
-#  else
-#    H("li",
-#      H(NULL, res))
-#}
-
 "HTMLbutton" <- function(label = "Calculate", js = "rpad.calculatePage()", ...) 
   # Other useful js parameters:
   #   js = "rpad.calculateNext(this)"  # calculate the next Rpad block
@@ -193,7 +169,7 @@
     H("a", href = url, ...,
       text))
 
-"HTMLimg" <- function(filename = RpadPlotName(), ...) 
+"HTMLimg" <- function(filename = get("plot.name", envir = .RpadEnv), ...) 
   H("img", src = RpadURL(filename), ...)
 
 "HTMLembed" <- function(filename, width = 600, height = 600, ...) 
@@ -223,30 +199,11 @@
 "BR" = function()
   H("br", standaloneTag = TRUE) # <br/>
 
-"HTMLh1" <- function(text) {
-  H("h1", text)
-}
-"HTMLh2" <- function(text) {
-  H("h2", text)
-}
-"HTMLh3" <- function(text) {
-  H("h3", text)
-}
-"HTMLh4" <- function(text) {
-  H("h4", text)
-}
-"HTMLh5" <- function(text) {
-  H("h5", text)
-}
-
 "HTMLon" <- function()
   H("htmlon", standaloneTag = TRUE)
 
 "HTMLoff" <- function()
   H("htmloff", standaloneTag = TRUE)
-
-"ROutputFormat" <- function(Format)
-  options(R.output.format = Format)
 
 "HTMLtag" <- function(tagName, ...) {
   # outputs the given HTML tagName with arguments supplied in ...
@@ -283,34 +240,3 @@
     Html(x)
   }
 }
-                     
-"dojoTree" <- function(x, first = TRUE, ...) {
-  x <- as.list(x)
-  res <- sapply(seq(len = length(x)), 
-    function(i)
-      H("div", dojoType="TreeNodeV3", ..., 
-        title = names(x)[i],
-        if (is.list(x[[i]]) && !(any(class(x[[i]]) %in% gsub("^Html.","",methods(Html)))))
-          dojoTree(x[[i]], first = FALSE)
-        else
-          H("div", dojoType="TreeNodeV3", title = Html(x[[i]]))))
-  res <- paste(res, collapse="") # combine the list elements
-  if (first) {
-    H(NULL,
-      H("div", dojoType = "TreeBasicControllerV3", widgetId="controller"),
-      H("div", dojoType="TreeV3", listeners="controller",
-        res))
-   } else {
-     res
-   }
-}
-
-## ##tests for dojoTree
-## x = list(a = 1:2, 44, b = list(a = 3:4, b = 6:5), c = data.frame(a=1:5, b = 11:15))
-## HTMLon()
-## H("p", "A simple tree:")
-## dojoTree(x)
-## H("p", "An expanded version:")
-## dojoTree(x, expandLevel = 2)
-## H("p", "A bigger tree:")
-## dojoTree(as.list(lm(1:10 ~ rnorm(10))))

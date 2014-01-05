@@ -89,7 +89,9 @@ showgraph()
 </pre>
 </div>
 
-<p>Here is another graphic: </p>
+<p>Here is another graphic. If the Rpad graphics type is "pngalpha"
+(the default for the server setup of Rpad), there is also a link to
+an EPS version of the plot.</p>
 
 <div data-dojo-type="Rpad" rpadRun="init">
 <pre>
@@ -99,7 +101,7 @@ persp(x, y, z, theta = 135, phi = 30, col = "green3",
       scale = FALSE, ltheta = -120, shade = 0.75, 
       border = NA, box = FALSE)
 HTMLon()
-showgraph()
+showgraph(link=TRUE)
 </pre>
 </div>
 

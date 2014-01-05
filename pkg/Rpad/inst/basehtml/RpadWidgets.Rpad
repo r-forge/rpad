@@ -3,7 +3,7 @@
 
 
 <head>
-  <title>Rpad Test Page</title>
+  <title>Rpad Widget Examples</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script src="Rpad_head.js"></script>
 </head>
@@ -16,7 +16,7 @@
      distribution - could this be solved by including Rpad_main.js in the layer?) -->
 <script src="Rpad_body.js"></script>
 
-<h1>Rpad Test Page</h1>
+<h1>Rpad Widget Examples</h1>
 <p>Each item should appear below as described.
 R input blocks (class "Rpad_input") have a white background, and R output blocks (class "Rpad_results") have a yellow background.
 R output blocks are not visible until the widget has been calculated.
@@ -54,7 +54,8 @@ Pressing this button calculates all widgets on the page with the rpadRun attribu
 <input onclick='javascript:rpad.calculatePage()' value='Calculate Page' type='button' >   </input>
 
 <h4>Rpad widgets with custom attributes</h4>
-<p>There are 3 counting widgets in the table below. In each one, the rpadHideSource attribute is set to true, so the sources should not be visible. The CalculateNone button specifically calculates the last of these widgets. The <a href="http://dojotoolkit.org/documentation/tutorials/1.9/events/">dojo/on</a> event API is used to connect the button click to the calculate method of the widget.</p>
+<p>There are 3 counting widgets in the table below. In each one, the rpadHideSource attribute is set to true, so the sources should not be visible. The CalculateNone button specifically calculates the last of these widgets.</p>
+
 <table width="70%" border="1"><tr valign="top"><td width="30%">
 
   <p>rpadRun="init": Calculate on page load/reload only<p>
@@ -79,7 +80,14 @@ Pressing this button calculates all widgets on the page with the rpadRun attribu
 </td></tr></table>
 
 <button id="NoneButton">CalculateNone</button>
-<script>
+
+<br/>
+<br/>
+
+<p>Here is the Javascript code, showing how the <a href="http://dojotoolkit.org/documentation/tutorials/1.9/events/">dojo/on</a> event API is used to connect the button click to the calculate method of the widget.</p>
+
+<div data-dojo-type="Rpad" rpadOutput="javascript" rpadRun="init">
+<pre>
 require(["dojo/parser", "dojo/on", "dojo/dom", "dijit/registry", "dojo/domReady!"],
     function(parser, on, dom, registry) {
         parser.parse();
@@ -89,9 +97,8 @@ require(["dojo/parser", "dojo/on", "dojo/dom", "dijit/registry", "dojo/domReady!
           myWidget.calculate();
         });
 });
-</script>
-
-
+</pre>
+</div>
 
 
 </body>

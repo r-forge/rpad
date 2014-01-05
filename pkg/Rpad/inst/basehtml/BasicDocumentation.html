@@ -287,6 +287,14 @@ functions that can be used in an Rpad HTML file are:</p>
   <li>rpad.calculateNext(node) -- Calculates the first Rpad widget after or under the given DOM node</li>
 </ul>
 
+<p>Debugging hint: the dojo.js that is packaged with Rpad is an optimized (compressed)
+version. To debug errors in the Javascript code using e.g. Firebug, it is easier
+to use a non-compressed dojo.js. This can be built by setting layerOptimize: false
+in app.profile.js and then building Dojo as outlined in the README (you will need
+the complete Dojo source distribution). Then, place the un-optimized dojo.js
+in your working directory and start Rpad; this new dojo.js will take precedence
+over the one installed with the package.</p>
+
 
 <h3>Example</h3>
 

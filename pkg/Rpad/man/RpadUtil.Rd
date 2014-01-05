@@ -1,4 +1,5 @@
 \name{RpadUtil}
+\alias{RpadEnv}
 \alias{RpadURL}
 \alias{RpadBaseURL}     
 \alias{RpadBaseFile}    
@@ -9,6 +10,7 @@
   Rpad utilities to generate filenames or URL's
 }
 \usage{
+  RpadEnv()
   RpadURL(filename = "")
   RpadBaseURL(filename = "")
   RpadBaseFile(filename = "")
@@ -19,6 +21,8 @@
   \item{filename}{ the name of a file. }
 }
 \value{
+\code{RpadEnv} returns the (non-exported) environment \dQuote{.RpadEnv}. Useful for peeking inside the environment for debugging purposes.
+
 \code{RpadURL} returns the URL for the given filename: "./filename" for the local version of Rpad and "/Rpad/server/dd????????/filename" for the server version.
 Use this to output HTML links for the user.
 

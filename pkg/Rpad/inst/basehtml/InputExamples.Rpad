@@ -73,6 +73,7 @@ print(myvar2)
 The following example is formulated as a basic Rpad widget, with the source code shown.
 This widget has rpadRun="init", so the select list with a random default state is created only when the page loads.
 Any time the Calculate Page button is pressed, a second widget (source hidden) reports the number of letters in the name of the currently selected state.</p>
+<input onclick='javascript:rpad.calculatePage()' value='Calculate Page' type='button' >   </input>
 <div data-dojo-type="Rpad" rpadRun="init">
   <pre>
   data(state)
@@ -85,6 +86,10 @@ Any time the Calculate Page button is pressed, a second widget (source hidden) r
 <div data-dojo-type="Rpad" rpadHideSource=true>
   cat(paste("The name of the selected state has", nchar(mystate), "letters.\n"))
 </div>
+
+
+<br/>
+<br/>
 
 
 </body>

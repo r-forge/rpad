@@ -138,7 +138,8 @@ require([
       postCreate: function(){
           // this.rpadInput refers to declaration of the widget with some R code
           this.rpadInput = this.containerNode;
-          //this.rpadInputWrapper.appendChild(this.rpadInput);
+          // to attach the widget to onReceive event (fired by rpad.receive) (see example in RpadTest.Rpad)
+          this.rpadInput.rpadWidget = this;
           if (this.rpadHideSource) this.hide();
       },
 
@@ -177,7 +178,8 @@ require([
                     rpadResults, this.rpadInput);
       }, 
 
-      onReceive: function() { // stub available for attaching
+      onReceive: function() {
+        // stub available for attaching events
       }
 
     });
@@ -201,29 +203,34 @@ require([
 rpad.dir = "";
 
 rpad.send = function(commands, rpadResults, rpadInput) {    
-  // Send "commands" for processing. 
-  // Put results received in the DOM node "rpadResults".
-  // Send along the originating DOM node "rpadInput" in case it's needed.
+  // leave javascript along to rpad.receive - will be eval'd there
+  if (rpadResults == "javascript") {
+    rpad.receive(rpadResults, commands, rpadInput);
+  } else {
+    // Send R "commands" for processing. 
+    // Put results received in the DOM node "rpadResults".
+    // Send along the originating DOM node "rpadInput" in case it's needed.
 //alert("in rpad.send, commands = "+commands);
-  require(["dojo/request"], function(request){
-      // The target URL on your webserver:
-      request.get("server/R_process.pl", {
-      // the query string to use
-      query: {
-        ID: rpad.dir,
-        command: "R_commands",
-        R_commands: commands
-      },
-      // The used data format.
-      handleAs: "text"
-    }).then(function(response){
-      // Event handler on successful call:
-      rpad.receive(rpadResults, response, rpadInput);
-    }, function(err){
-      // Event handler on errors:
-      alert("Error in rpad.send. Did R stop running?\n"+err);
+    require(["dojo/request"], function(request){
+        // The target URL on your webserver:
+        request.get("server/R_process.pl", {
+        // the query string to use
+        query: {
+          ID: rpad.dir,
+          command: "R_commands",
+          R_commands: commands
+        },
+        // The used data format.
+        handleAs: "text"
+      }).then(function(response){
+        // Event handler on successful call:
+        rpad.receive(rpadResults, response, rpadInput);
+      }, function(err){
+        // Event handler on errors:
+        alert("Error in rpad.send. Did R stop running?\n"+err);
+      });
     });
-  });
+  }
 }
 
    
@@ -234,13 +241,15 @@ rpad.receive = function(rpadResults, data, rpadInput) {
 // if rpadResults == "javascript", exec the javascript instead of inserting results in the DOM
 //alert("in rpad.receive, data="+data);
 
-    if (rpadInput.onReceive) rpadInput.onReceive(); // fire an event inputs can attach to
+    // fire an event inputs can attach to
+    if (rpadInput.onReceive) rpadInput.onReceive();
     if (rpadInput.rpadWidget) {
-        rpadInput.rpadWidget.onReceive(); // fire an event Rpad widgets can attach to
+        // fire an event Rpad widgets can attach to
+        rpadInput.rpadWidget.onReceive();
         var rpadOutputStyle = rpadInput.rpadWidget.rpadOutput;
     }
     if (rpadResults == "javascript") {
-        dj_eval(data);
+        eval(data);
     } else if (rpadResults != null) {
         rpadResults.style.display = "";
         rpad.updateResults(rpadResults, data, rpadOutputStyle);       
@@ -422,7 +431,7 @@ rpad._hasNoFormParent = function(node) {
 }
 
    
-rpad.calculateNode = function(node) {
+rpad.calculateNode = function(node, doit) {
     // Calculates the DOM node "node" - either a widget, a form, or input node
     // Returns true if it found a node to calculate, false if not.
     if (node.nodeType != 1) return false;
@@ -431,7 +440,8 @@ rpad.calculateNode = function(node) {
     // check if we are ready to calculate, based on runState (state of page) and rpadRun (type of node)
     var isReady =  (rpad._runState == "init" && rrun == "init") || 
                    (rpad._runState == "normal" && (rrun == null || rrun == "" || rrun == "normal")) ||
-                   (rrun == "all");
+                   (rrun == "all") ||
+                   doit;
     if (isReady) {      
 // alert("in rpad.calculateNode/isReady. nodeName="+node.nodeName+" rrun="+rrun);
         // to get the widget given the node

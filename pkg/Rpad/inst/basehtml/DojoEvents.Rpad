@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+
+
+<head>
+  <title>Dojo Events</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="Rpad_head.js"></script>
+</head>
+
+
+<body>
+<script src="Rpad_body.js"></script>
+
+<h1>Dojo Events</h1>
+
+<p>(Modified from testDojoEvents.Rpad of Rpad 1.3.0)</p>
+
+<p>Normally, Rpad runs calculations on a page from top to bottom. With
+Dojo's event system, you can change that and run things in different orders
+or with different dependencies or to make interactions more dynamic.
+The following example updates the top Rpad input block whenever you change the select
+box created by the third Rpad input block. </p>
+
+
+<div data-dojo-type="Rpad" rpadRun="none" id="rpad3">
+<pre>
+# this block (id=rpad3) runs after the Rpad section below is finished
+p = state.x77[sname, "Population"]
+a = state.area[state.name==sname]
+cat("population density of", sname, "is", 1000*p/a, "persons/sq.mile")
+</pre>
+</div>
+<br/>
+
+<div data-dojo-type="Rpad" rpadRun="none" id="rpad2">
+<pre>
+# this block (id=rpad2) runs when the select box is updated
+HTMLon()
+H("h3", sname)
+Html(state.x77[sname, , drop=FALSE])
+n <- n + 1
+pop <- pop + state.x77[sname, "Population"]
+BR()
+cat("in the", n, "states selected so far, the total population is", pop, "thousand people")
+</pre>
+</div>
+<br/>
+
+<div data-dojo-type="Rpad" rpadRun="init" id="rpad1">
+<pre>
+# this block (id=rpad1) runs initially
+pop <- n <- 0
+data(state)
+cat("Pick a state:")
+HTMLon()
+HTMLselect("sname", state.name, id="sNameSelect")
+</pre>
+</div>
+<br/>
+
+
+<br/>
+
+<p>Dojo Javascript code to tie the GUI together (normally, you'd hide this code):</p>
+
+
+<div data-dojo-type="Rpad" rpadRun="init" rpadOutput="javascript">
+<pre>
+require(["dojo/parser", "dojo/on", "dojo/dom", "dijit/registry", "dojo/aspect", "dojo/domReady!"],
+function(parser, on, dom, registry, aspect){
+
+  // parsing the nodes is needed when using declarative syntax
+  // http://dojotoolkit.org/documentation/tutorials/1.8/declarative/
+  parser.parse();
+
+  // to make the select box automatically update the R variable
+  // we watch for a change in the widget holding the select box
+  var myWidget1 = registry.byId("rpad1");
+  on(myWidget1, "change", function(evt){
+
+    var mySelect = dom.byId("sNameSelect");
+    // here, set 'doit' (second argument) to true to force calculation of
+    // a node with rpadRun="init" (which otherwise is calculated only on page load).
+    rpad.calculateNode(mySelect, true)
+
+    // when the select is done updating (has a response from R), calculate "rpad2"
+    var handle = aspect.after(mySelect, "onReceive", function(response){
+      // to run just once, we remove this handle, otherwise the 'n' increments indefinitely
+      handle.remove();
+      //rpad.calculateNode("rpad2", true)
+      var myWidget2 = registry.byId("rpad2");
+      myWidget2.calculate();
+    });
+
+    // when "rpad2" is done, calculate "rpad3"
+    var myWidget2 = registry.byId("rpad2");
+    on(myWidget2, "receive", function(evt) {
+      var myWidget3 = registry.byId("rpad3");
+      // set a 0.5s timeout to visually demonstrate the order of calculation
+      setTimeout(function() { 
+        myWidget3.calculate();
+      }, 500);
+    });
+
+  });
+
+});
+</pre>
+</div>
+
+
+</body>
+</html>
+

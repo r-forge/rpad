@@ -35,6 +35,8 @@ if ($p_command eq 'login') {
 
   if ($pid == 0) {
     
+    # TODO: http://perl.apache.org/docs/1.0/guide/performance.html#toc_Freeing_the_Parent_Process
+    # (and protect from zombies)
     # do this in the child
     open STDOUT, ">/dev/null";
     open STDERR, ">/dev/null";
@@ -55,8 +57,14 @@ if ($p_command eq 'login') {
     &startR();
 
     # subroutine to clean up temporary directory
-    sub cleanup{
+    # and exit child process
+    sub all_done{
       remove_tree($Rpad_ID);
+      # we do want the interpreter to quit (so the associated R process gets killed)
+      # therefore we can't use exit() or die() because they get overriden in mod_perl
+      # http://perl.apache.org/docs/1.0/guide/porting.html#toc_Terminating_requests_and_processes__the_exit___and_child_terminate___functions
+      # http://perl.apache.org/docs/1.0/guide/performance.html#toc_Forking_and_Executing_Subprocesses_from_mod_perl
+      CORE::exit(0);
     }
 
     # set up inotify watch on temporary directory
@@ -71,6 +79,8 @@ if ($p_command eq 'login') {
         # read R command from the input file
         # $R->run_from_file would be cleaner, but it's a source(), so doesn't echo like the interactive session
         #my $output_value = eval { $R->run_from_file($name); };
+        # TODO: use IO::File to avoid file descriptor leakage
+        # http://perl.apache.org/docs/1.0/guide/porting.html#toc_Filehandlers_and_locks_leakages
         open(my $fh, '<', $fullname) or die "Could not open file '$fullname' $!";
         # Slurp into a scalar
         my $R_commands; 
@@ -93,8 +103,7 @@ if ($p_command eq 'login') {
         close $fh;
       }
       elsif ( $name eq "theend" ) {
-        &cleanup();
-        die "watch process terminated by request";
+        &all_done();
       }
     }) or die "watch creation failed: $!";
 
@@ -103,19 +112,20 @@ if ($p_command eq 'login') {
     # instead, turn off blocking on inotify and use Time::HiRes
     # http://www.perlmonks.org/?node_id=859287
     $inotify->blocking(0);
-    my $timelimit = 20;
+    my $timelimit = 300;
     my $end = time() + $timelimit;
     while( time() < $end ) {
       $inotify->poll;
       sleep 0.1;
     }
-    &cleanup();
-    die "watch process reached timeout limit";
+
+    &all_done();
 
   }
 
-  # wait a second for R to start and to begin watch of
-  # input file before any R commands are sent
+  # this is the parent
+  # wait a second before returning so that R and the input file watch
+  # can start before any R commands are sent
   sleep 1;
 
 }
